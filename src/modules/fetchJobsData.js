@@ -1,23 +1,18 @@
-import { Page } from "puppeteer";
-import { Scroll } from "../interfaces";
-
-const fetchJobsData = async (page: Page) => {
+const fetchJobsData = async (page) => {
   return await page.evaluate(() => {
-    const jobsList: any = [];
+    const jobsList = [];
 
-    const jobsArea = <HTMLElement>(
-      document.querySelector(".jobs-search-results-list")
-    );
+    const jobsArea = document.querySelector(".jobs-search-results-list");
 
-    const scroll: Scroll = {
+    const scroll = {
       min: 0,
       current: 0,
       max: 80,
     };
 
-    const interval: number = 50;
+    const interval = 50;
 
-    const scrollInterval: NodeJS.Timer = setInterval(() => {
+    const scrollInterval = setInterval(() => {
       if (scroll.current <= scroll.max) {
         jobsArea.scrollBy(scroll.min, scroll.current);
 
@@ -25,7 +20,7 @@ const fetchJobsData = async (page: Page) => {
       } else {
         clearInterval(scrollInterval);
 
-        const jobsElements: Element[] = Array.from(
+        const jobsElements = Array.from(
           document.querySelectorAll(".artdeco-entity-lockup__content")
         );
 
@@ -59,4 +54,4 @@ const fetchJobsData = async (page: Page) => {
   });
 };
 
-export default fetchJobsData;
+module.exports = fetchJobsData ;
