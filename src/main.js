@@ -13,6 +13,7 @@ const fetchJobsData = require("./modules/fetchJobsData");
   const authPage = await browser.newPage();
   await authPage.goto(page.auth);
   await authenticateUser(authPage);
+  await authPage.waitForTimeout(5000);
 
   const jobsPage = await browser.newPage();
   await jobsPage.goto(page.jobs);

@@ -1,7 +1,7 @@
 const input = {
   email: "#username",
   password: "#password",
-  button: "btn__primary--large",
+  button: ".btn__primary--large",
 };
 
 const page = {
