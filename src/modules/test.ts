@@ -1,20 +1,13 @@
 const jobsArea = document.querySelector(".jobs-search-results-list");
-
-let companyNames;
-let jobNames;
-
-const minScroll = 0;
-const maxScroll = 80;
-
-let currentScroll = 0;
+import { scroll } from "../data";
 
 const jobs = [];
 
 const scrollInterval = setInterval(() => {
-  if (currentScroll <= maxScroll) {
-    jobsArea.scrollBy(minScroll, currentScroll);
+  if (scroll.current <= scroll.max) {
+    jobsArea?.scrollBy(scroll.min, scroll.current);
 
-    currentScroll++;
+    scroll.current++;
   } else {
     clearInterval(scrollInterval);
 
@@ -22,22 +15,22 @@ const scrollInterval = setInterval(() => {
       document.querySelectorAll(".artdeco-entity-lockup__content")
     ).map((job) => {
       let jobName = job.children[0].children[0].textContent
-        .replace(/\n/g, "")
+        ?.replace(/\n/g, "")
         .trim();
 
-      let companyName = job.children[1].children[0];
+      let companyName: any = job.children[1].children[0];
 
       if (companyName !== undefined) {
-        companyName = companyName.textContent.replace(/\n/g, "").trim();
+        companyName = companyName.textContent?.replace(/\n/g, "").trim();
 
-        let modelName = Array.from(job.children[2].children[0].children)
-          .map((name) => name.textContent.replace(/\n/g, "").trim())
+        let workPlace = Array.from(job.children[2].children[0].children)
+          .map((name) => name.textContent?.replace(/\n/g, "").trim())
           .join(" - ");
 
         const newJob = {
           title: jobName,
           company: companyName,
-          model: modelName,
+          work_place: workPlace,
         };
 
         jobs.push(newJob);
