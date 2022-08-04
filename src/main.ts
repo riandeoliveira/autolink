@@ -1,10 +1,19 @@
-import puppeteer, { Browser } from "puppeteer";
-import { authenticateUser, scrollThroughJobList, searchJobsData } from "./modules";
+import puppeteer, { Browser, Page } from "puppeteer";
+import { page } from "./data";
+import { authenticateUser, fetchJobsData } from "./modules";
 
 (async () => {
-  const browser: Browser = await puppeteer.launch({ headless: false });
+  const browser: Browser = await puppeteer.launch({
+    headless: false,
+    args: ["--start-maximized"],
+    defaultViewport: null,
+  });
 
-  await authenticateUser(browser);
-  await scrollThroughJobList(browser);
-  await searchJobsData();
+  const authPage: Page = await browser.newPage();
+  await authPage.goto(page.auth);
+  await authenticateUser(authPage);
+
+  const jobsPage: Page = await browser.newPage();
+  await jobsPage.goto(page.jobs);
+  await fetchJobsData(jobsPage);
 })();

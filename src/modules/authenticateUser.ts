@@ -1,22 +1,18 @@
-import { Browser, Page } from "puppeteer";
+import { Page } from "puppeteer";
 import { waitForLoading } from ".";
-import { input, page } from "../data";
+import { input } from "../data";
 import { EMAIL, PASSWORD } from "../libs/dotenv";
 
-const authenticateUser = async (browser: Browser): Promise<void> => {
-  const authPage: Page = await browser.newPage();
-
-  await authPage.goto(page.auth);
-
-  await authPage
+const authenticateUser = async (page: Page): Promise<void> => {
+  await page
     .waitForSelector(input.email)
-    .then(() => authPage.type(input.email, EMAIL));
+    .then(() => page.type(input.email, EMAIL));
 
-  await authPage
+  await page
     .waitForSelector(input.password)
-    .then(() => authPage.type(input.password, PASSWORD));
+    .then(() => page.type(input.password, PASSWORD));
 
-  await authPage.evaluate(() => {
+  await page.evaluate(() => {
     const submitButton = <HTMLElement>(
       document.querySelector(".btn__primary--large")
     );
@@ -24,7 +20,7 @@ const authenticateUser = async (browser: Browser): Promise<void> => {
     submitButton.click();
   });
 
-  await waitForLoading(authPage);
+  await waitForLoading(page);
 };
 
 export default authenticateUser;
