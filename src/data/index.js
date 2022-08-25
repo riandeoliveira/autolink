@@ -6,12 +6,12 @@ const input = {
 
 const page = {
   auth: "https://www.linkedin.com/login/pt?fromSignIn=true&trk=guest_homepage-basic_nav-header-signin",
-  jobs: "https://www.linkedin.com/jobs/search/?currentJobId=3202701658&keywords=Desenvolvedor%20de%20front-end&refresh=true",
+  jobs: "https://www.linkedin.com/jobs/collections/recommended/",
 };
 
-const jobs = {
+const job = {
   area: ".jobs-search-results-list",
   list: ".artdeco-entity-lockup__content",
 };
 
-module.exports = { input, page, jobs };
+module.exports = { input, page, job };
