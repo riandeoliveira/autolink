@@ -1,7 +1,7 @@
 const puppeteer = require("puppeteer");
-const { page, job } = require("./data");
+const { page } = require("./data");
 const authenticateUser = require("./auth");
-const sendDataToTelegramBot = require("./libs/telegraf");
+const { sendMessageToBot } = require("./libs/telegraf");
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -152,6 +152,28 @@ const sendDataToTelegramBot = require("./libs/telegraf");
   };
 
   const jobsData = await fetchJobsData();
+
+  let index = 0;
+
+  setInterval(() => {
+    sendMessageToBot(`
+Nova Vaga Encontrada!
+
+Título: ${jobsData[index].title}
+
+Empresa: ${jobsData[index].companyName}
+
+Região: ${jobsData[index].region}
+
+Modalidade: ${jobsData[index].workplaceType}
+
+Data: ${jobsData[index].postDate}
+
+Link: ${jobsData[index].jobUrl}
+`);
+
+    index++;
+  }, 5000);
 
   console.log(jobsData);
 })();
