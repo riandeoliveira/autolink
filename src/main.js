@@ -1,6 +1,7 @@
 const puppeteer = require("puppeteer");
-const { page } = require("./data");
+const { page, job } = require("./data");
 const authenticateUser = require("./auth");
+const sendDataToTelegramBot = require("./libs/telegraf");
 
 (async () => {
   const browser = await puppeteer.launch({
@@ -17,124 +18,140 @@ const authenticateUser = require("./auth");
   const jobsPage = await browser.newPage();
   await jobsPage.goto(page.jobs);
 
-  await jobsPage.evaluate(() => {
-    let pageIndex = 0;
+  const fetchJobsData = async () => {
+    return await jobsPage.evaluate(() => {
+      return new Promise((resolve) => {
+        let pageIndex = 0;
 
-    const jobList = [];
+        const jobList = [];
 
-    const nextPage = (index) => {
-      const pageList = document.querySelectorAll(
-        ".artdeco-pagination__indicator"
-      );
-
-      pageList[index].children[0].click();
-
-      if (index !== pageList.length) {
-        getJobsData();
-      } else console.log("TODOS OS DADOS COLETADOS COM SUCESSO!");
-    };
-
-    const scrollThroughJobsCardList = () => {
-      const scroll = {
-        min: 0,
-        current: 0,
-        max: 80,
-      };
-
-      const jobsCardList = document.querySelector(".jobs-search-results-list");
-
-      const interval = setInterval(() => {
-        if (scroll.current <= scroll.max) {
-          jobsCardList.scrollBy(scroll.min, scroll.current);
-
-          scroll.current++;
-        } else clearInterval(interval);
-      }, 50);
-    };
-
-    const getJobsData = () => {
-      scrollThroughJobsCardList();
-
-      setTimeout(() => {
-        const jobsElements = document.querySelectorAll(".job-card-list__title");
-
-        let jobIndex = 0;
-
-        const interval = setInterval(() => {
-          setTimeout(() => {
-            jobsElements[jobIndex].click();
-          }, 3000);
-
-          const titleElement = document.querySelector(
-            ".jobs-unified-top-card__job-title"
-          );
-          const companyNameElement = document.querySelector(
-            ".jobs-unified-top-card__company-name"
-          );
-          const regionElement = document.querySelector(
-            ".jobs-unified-top-card__bullet"
-          );
-          const workplaceTypeElement = document.querySelector(
-            ".jobs-unified-top-card__workplace-type"
-          );
-          const postDateElement = document.querySelector(
-            ".jobs-unified-top-card__posted-date"
+        const nextPage = (index) => {
+          const pageList = document.querySelectorAll(
+            ".artdeco-pagination__indicator"
           );
 
-          const title =
-            titleElement !== null
-              ? titleElement.textContent.trim()
-              : "Não informado";
-          const companyName =
-            companyNameElement !== null
-              ? companyNameElement.textContent.trim()
-              : "Não informado";
-          const region =
-            regionElement !== null
-              ? regionElement.textContent.trim()
-              : "Não informado";
-          const workplaceType =
-            workplaceTypeElement !== null
-              ? workplaceTypeElement.textContent.trim()
-              : "Não informado";
-          const postDate =
-            postDateElement !== null
-              ? postDateElement.textContent.trim()
-              : "Não informado";
+          pageList[index].children[0].click();
 
-          const applyButton = document.querySelector(
-            ".artdeco-button--icon-right"
-          );
-          const easyApplyButton = document.querySelector(".jobs-apply-button");
-          const jobUrl = location.href;
+          if (index !== pageList.length) {
+            getJobsData();
+          } else console.log("TODOS OS DADOS COLETADOS COM SUCESSO!");
+        };
 
-          const job = {
-            title,
-            companyName,
-            region,
-            workplaceType,
-            postDate,
-            jobUrl,
+        const scrollThroughJobsCardList = () => {
+          const scroll = {
+            min: 0,
+            current: 0,
+            max: 80,
           };
 
-          jobList.push(job);
+          const jobsCardList = document.querySelector(
+            ".jobs-search-results-list"
+          );
 
-          console.clear();
-          console.table(jobList);
+          const interval = setInterval(() => {
+            if (scroll.current <= scroll.max) {
+              jobsCardList.scrollBy(scroll.min, scroll.current);
 
-          jobIndex++;
+              scroll.current++;
+            } else clearInterval(interval);
+          }, 50);
+        };
 
-          if (jobIndex === jobsElements.length) {
-            clearInterval(interval);
+        const getJobsData = () => {
+          scrollThroughJobsCardList();
 
-            pageIndex++;
+          setTimeout(() => {
+            const jobsElements = document.querySelectorAll(
+              ".job-card-list__title"
+            );
 
-            nextPage(pageIndex);
-          }
-        }, 5000);
-      }, 4000);
-    };
+            let jobIndex = 0;
 
-    getJobsData();
-  });
+            const interval = setInterval(() => {
+              setTimeout(() => {
+                jobsElements[jobIndex].click();
+              }, 3000);
+
+              const titleElement = document.querySelector(
+                ".jobs-unified-top-card__job-title"
+              );
+              const companyNameElement = document.querySelector(
+                ".jobs-unified-top-card__company-name"
+              );
+              const regionElement = document.querySelector(
+                ".jobs-unified-top-card__bullet"
+              );
+              const workplaceTypeElement = document.querySelector(
+                ".jobs-unified-top-card__workplace-type"
+              );
+              const postDateElement = document.querySelector(
+                ".jobs-unified-top-card__posted-date"
+              );
+
+              const title =
+                titleElement !== null
+                  ? titleElement.textContent.trim()
+                  : "Não informado";
+              const companyName =
+                companyNameElement !== null
+                  ? companyNameElement.textContent.trim()
+                  : "Não informado";
+              const region =
+                regionElement !== null
+                  ? regionElement.textContent.trim()
+                  : "Não informado";
+              const workplaceType =
+                workplaceTypeElement !== null
+                  ? workplaceTypeElement.textContent.trim()
+                  : "Não informado";
+              const postDate =
+                postDateElement !== null
+                  ? postDateElement.textContent.trim()
+                  : "Não informado";
+
+              const applyButton = document.querySelector(
+                ".artdeco-button--icon-right"
+              );
+              const easyApplyButton =
+                document.querySelector(".jobs-apply-button");
+              const jobUrl = location.href;
+
+              const job = {
+                title,
+                companyName,
+                region,
+                workplaceType,
+                postDate,
+                jobUrl,
+              };
+
+              jobList.push(job);
+
+              console.clear();
+              console.table(jobList);
+
+              jobIndex++;
+
+              if (jobIndex === jobsElements.length) {
+                clearInterval(interval);
+
+                resolve(jobList);
+
+                // pageIndex++;
+                // nextPage(pageIndex);
+              }
+            }, 5000);
+          }, 4000);
+        };
+
+        getJobsData();
+
+        return jobList;
+      });
+    });
+  };
+
+  const jobsData = await fetchJobsData();
+
+  console.log(jobsData);
 })();
