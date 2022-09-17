@@ -3,11 +3,11 @@ const { page } = require("./data");
 const authenticateUser = require("./auth");
 const { sendMessageToBot } = require("./libs/telegraf");
 
-(async () => {
+const runBot = async () => {
   const browser = await puppeteer.launch({
-    headless: false,
-    args: ["--start-maximized"],
-    defaultViewport: null,
+    // headless: false,
+    // args: ["--start-maximized"],
+    // defaultViewport: null,
   });
 
   const authPage = await browser.newPage();
@@ -176,4 +176,6 @@ Link: ${jobsData[index].jobUrl}
   }, 5000);
 
   console.log(jobsData);
-})();
+};
+
+module.exports = runBot;
