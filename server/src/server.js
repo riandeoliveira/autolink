@@ -4,11 +4,7 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "https://autolink-client.vercel.app/",
-  })
-);
+app.use(cors());
 
 app.get("/bot", (req, res) => {
   runBot();
